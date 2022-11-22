@@ -15,9 +15,10 @@ class Player:
         self.s =False
         self.a =False
         self.d =False
-        self.speed = 300
+        self.speed = 150
         self.shooting = False
-        self.aps = 60
+        self.shotspeed = 2500
+        self.aps = 100
         self.frameUntillNext = 0
 
     def draw(self, win):

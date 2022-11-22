@@ -3,43 +3,59 @@ import pygame, sys , math
 from Player import Player
 from pygame.locals import *
 
+def shoot(player,bullets,FPS):
+    if player.shooting:
+            if player.frameUntillNext <= 0:
+                spawn_bullet(bullets,player.x+player.size/2,player.y+player.size/2,player.shotspeed/FPS)  
+                player.frameUntillNext += FPS/ player.aps
+
 def bounce(bullet,win):
     out = True
-    width = win.get_width()
-    height = win.get_height()
+    width = win.get_width()-1
+    height = win.get_height()-1
     move_vec = list(bullet[2])
     while out == True :
-        if bullet[0] <= 0:
-            bullet[0] *= -1
-            move_vec[0] *= -1
-            bullet[2] = move_vec
-        if bullet[0] >= width:
-            bullet[0] -= (bullet[0] -width)*2
-            move_vec[0] *= -1
-            bullet[2] = move_vec
-        if bullet[1] <= 0:
-            bullet[1] *= -1
-            move_vec[1] *= -1
-            bullet[2] = move_vec
-        if bullet[1] >= height:
-            bullet[1] -= (bullet[1] -height)*2
-            move_vec[1] *= -1
-            bullet[2] = move_vec
+        if bullet[3] > 0:
+            if bullet[0] <= 0:
+                bullet[0] *= -1
+                move_vec[0] *= -1
+                bullet[2] = move_vec
+                bullet[3] -=  1
+                continue
+            if bullet[0] >= width:
+                bullet[0] -= (bullet[0] -width)*2
+                move_vec[0] *= -1
+                bullet[2] = move_vec
+                bullet[3] -=  1
+                continue
+            if bullet[1] <= 0:
+                bullet[1] *= -1
+                move_vec[1] *= -1
+                bullet[2] = move_vec
+                bullet[3] -=  1
+                continue
+            if bullet[1] >= height:
+                bullet[1] -= (bullet[1] -height)*2
+                move_vec[1] *= -1
+                bullet[2] = move_vec
+                bullet[3] -=  1
+                continue
 
 
 
-
-        out = False
+        if (0 <= bullet[0] < win.get_width() and 0 < bullet[1] < win.get_height()) or bullet[3] <=0 :
+            out = False
 
 
 def spawn_bullet(list_of_bullets, x, y , speed=50):
+    bounce = 2
     mouse_x, mouse_y = pygame.mouse.get_pos()
     vector_x, vector_y = mouse_x - x, mouse_y - y
     distance = math.hypot(vector_x, vector_y)
     if distance == 0:
         return
     move_vec = (speed * vector_x / distance, speed * vector_y / distance)
-    list_of_bullets.append([x, y, move_vec])
+    list_of_bullets.append([x, y, move_vec,bounce])
 
 
 
@@ -53,7 +69,7 @@ def main():
     WIDTH  = 480
     HEIGHT = 480
     win = pygame.display.set_mode((WIDTH,HEIGHT))
-    FPS = 60
+    FPS = 100
     clock = pygame.time.Clock()
     bullets = []
     player = Player(WIDTH/2, HEIGHT/2,WIDTH,HEIGHT)
@@ -64,6 +80,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 player.shooting = True
+                shoot(player,bullets,FPS)
 
             if event.type == pygame.MOUSEBUTTONUP:
                 player.shooting = False
@@ -93,19 +110,17 @@ def main():
         x, y = pygame.mouse.get_pos()     
         win.fill((100,100,100))
 
-
-        if player.shooting:
-            if player.frameUntillNext <= 0:
-            # pygame.draw.line(win,(255,0,0),((player.x+player.size/2),(player.y+player.size/2)),(x,y))
-                spawn_bullet(bullets,player.x+player.size/2,player.y+player.size/2,300/FPS)  
-                player.frameUntillNext += FPS/ player.aps
+        shoot(player,bullets,FPS)
+        
 
 
+        i = player.shotspeed/FPS
         for bullet in bullets:
             bullet[0] += bullet[2][0]
             bullet[1] += bullet[2][1]
             bounce(bullet,win)
-            if not (0-50 <= bullet[0] < win.get_width()+50 and 0-50 < bullet[1] < win.get_height())+50:
+            i = 0
+            if not (0-i <= bullet[0] < win.get_width()+i and 0-i < bullet[1] < win.get_height()+i):
                 del bullets[bullets.index(bullet)]
                 continue
             pygame.draw.circle(win,(0,255,255),(bullet[0],bullet[1]),10)
