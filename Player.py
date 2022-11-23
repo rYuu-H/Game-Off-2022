@@ -8,6 +8,7 @@ class Player:
         self.HEIGHT= HEIGHT
         self.x = int(x)
         self.y = int(y)
+        self.centerPT = (self.x+self.size/2,self.y+self.size/2)
         self.color = (250,0,0)
         self.velX = 0
         self.celY = 0
@@ -17,8 +18,10 @@ class Player:
         self.d =False
         self.speed = 150
         self.shooting = False
+        self.bounce = 2
         self.shotspeed = 2500
         self.aps = 100
+        self.proj
         self.frameUntillNext = 0
 
     def draw(self, win):
@@ -42,6 +45,7 @@ class Player:
 
         self.x += self.velX/FPS
         self.y += self.velY/FPS
+        self.centerPT = (self.x+self.size/2,self.y+self.size/2)
 
         if self.x <= 0:
             self.x = 0 

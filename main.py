@@ -6,7 +6,7 @@ from pygame.locals import *
 def shoot(player,bullets,FPS):
     if player.shooting:
             if player.frameUntillNext <= 0:
-                spawn_bullet(bullets,player.x+player.size/2,player.y+player.size/2,player.shotspeed/FPS)  
+                spawn_bullet(bullets,player,FPS)  
                 player.frameUntillNext += FPS/ player.aps
 
 def bounce(bullet,win):
@@ -47,15 +47,26 @@ def bounce(bullet,win):
             out = False
 
 
-def spawn_bullet(list_of_bullets, x, y , speed=50):
-    bounce = 2
+def spawn_bullet(list_of_bullets,player,FPS):
+    bounce = player.bounce
+    speed = player.shotspeed/FPS
+    x = player.centerPT[0]
+    y = player.centerPT[1]
     mouse_x, mouse_y = pygame.mouse.get_pos()
     vector_x, vector_y = mouse_x - x, mouse_y - y
     distance = math.hypot(vector_x, vector_y)
     if distance == 0:
         return
     move_vec = (speed * vector_x / distance, speed * vector_y / distance)
+    
     list_of_bullets.append([x, y, move_vec,bounce])
+    list_of_bullets.append([x, y, (-move_vec[0],-move_vec[1]),bounce]) # back
+    list_of_bullets.append([x, y, (move_vec[1],-move_vec[0]),bounce]) #left
+    list_of_bullets.append([x, y, (-move_vec[1],move_vec[0]),bounce]) #right
+    # list_of_bullets.append([x, y, (-move_vec[0],move_vec[1]),bounce])
+    # list_of_bullets.append([x, y, (move_vec[0],-move_vec[1]),bounce])
+    # list_of_bullets.append([x, y, move_vec,bounce])
+    # list_of_bullets.append([x,y, move_vec,bounce])
 
 
 
