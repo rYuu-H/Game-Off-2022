@@ -1,7 +1,10 @@
 
 import pygame, sys , math
+from Enemy import minion
 from Player import Player
 from pygame.locals import *
+
+
 
 def shoot(player,bullets,FPS):
     if player.shooting:
@@ -58,11 +61,21 @@ def spawn_bullet(list_of_bullets,player,FPS):
     if distance == 0:
         return
     move_vec = (speed * vector_x / distance, speed * vector_y / distance)
-    
-    list_of_bullets.append([x, y, move_vec,bounce])
-    list_of_bullets.append([x, y, (-move_vec[0],-move_vec[1]),bounce]) # back
-    list_of_bullets.append([x, y, (move_vec[1],-move_vec[0]),bounce]) #left
-    list_of_bullets.append([x, y, (-move_vec[1],move_vec[0]),bounce]) #right
+    list_of_bullets.append([x, y, move_vec,bounce,player])
+
+    # endpoint = pygame.Vector2(mouse_x, mouse_y)
+    # endpoint.rotate(15)
+    # startpoint = pygame.Vector2( x,y)
+    # endpoint = pygame.Vector2(mouse_x, mouse_y)
+    # current_endpoint = startpoint+ endpoint.rotate(180)
+    # vector_x1, vector_y1 = current_endpoint[0] - x, current_endpoint[1] - y
+    # distance1 = math.hypot(vector_x1, vector_y1)
+    # move_vec1 = (speed * vector_x1 / distance, speed * vector_y1 / distance1)
+    # list_of_bullets.append([x, y, move_vec1,bounce])
+
+    # list_of_bullets.append([x, y, (-move_vec[0],-move_vec[1]),bounce]) # back
+    # list_of_bullets.append([x, y, (move_vec[1],-move_vec[0]),bounce]) #left
+    # list_of_bullets.append([x, y, (-move_vec[1],move_vec[0]),bounce]) #right
     # list_of_bullets.append([x, y, (-move_vec[0],move_vec[1]),bounce])
     # list_of_bullets.append([x, y, (move_vec[0],-move_vec[1]),bounce])
     # list_of_bullets.append([x, y, move_vec,bounce])
@@ -84,10 +97,20 @@ def main():
     clock = pygame.time.Clock()
     bullets = []
     player = Player(WIDTH/2, HEIGHT/2,WIDTH,HEIGHT)
+    enemys = []
+    enemys.append(minion())
     running = True
      
+    test = False
+
     # main loop
     while running:
+
+        if test:
+            enemys.append(minion())
+    
+
+
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 player.shooting = True
@@ -108,6 +131,8 @@ def main():
                     player.w = True
                 if event.key == pygame.K_s:
                     player.s = True
+                if event.key == pygame.K_t:
+                    test = True
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:
@@ -118,6 +143,8 @@ def main():
                     player.w = False
                 if event.key == pygame.K_s:
                     player.s = False
+                if event.key == pygame.K_t:
+                    test = False
         x, y = pygame.mouse.get_pos()     
         win.fill((100,100,100))
 
@@ -134,15 +161,19 @@ def main():
             if not (0-i <= bullet[0] < win.get_width()+i and 0-i < bullet[1] < win.get_height()+i):
                 del bullets[bullets.index(bullet)]
                 continue
-            pygame.draw.circle(win,(0,255,255),(bullet[0],bullet[1]),10)
+            # owner = bullet[4]
+            pygame.draw.circle(win,bullet[4].bulletClolor,(bullet[0],bullet[1]),10)
         pygame.draw.line(win,(255,0,0),((player.x+player.size/2),(player.y+player.size/2)),(x,y))
-        player.draw(win)
-        
+        player.draw(win) 
         player.update(FPS)
+        
+        for enemy in enemys:
+            enemy.draw(win)
+            enemy.update(player,FPS)
         pygame.display.flip()
         # print(player.shooting)
         # print(pygame.mouse.get_pos())
-        print(player.x,player.y)
+        # print(player.x,player.y)
         clock.tick(FPS)
                 
      

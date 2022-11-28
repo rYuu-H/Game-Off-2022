@@ -10,6 +10,7 @@ class Player:
         self.y = int(y)
         self.centerPT = (self.x+self.size/2,self.y+self.size/2)
         self.color = (250,0,0)
+        self.bulletClolor = (0,255,255)
         self.velX = 0
         self.celY = 0
         self.w =False
@@ -19,9 +20,9 @@ class Player:
         self.speed = 150
         self.shooting = False
         self.bounce = 2
-        self.shotspeed = 2500
-        self.aps = 100
-        self.proj
+        self.shotspeed = 200
+        self.aps = 5
+        self.projectiles = 5
         self.frameUntillNext = 0
 
     def draw(self, win):
